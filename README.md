@@ -1,5 +1,10 @@
-pixelate
+Pixelate
 ========
+
+>Build status:  | &nbsp;
+>---------------|------------------------------------------------------------
+>Master         | [![Build Status][travis-image-master]][travis-url-master]
+>In development | [![Build Status][travis-image-develop]][travis-url-develop]
 
 Pixelate an image's canvas just by select.
 
@@ -197,3 +202,9 @@ Event triggers
 - `on('move', fn(offsetX, offsetY))`: when selected area move
 
 - `on('dispose', fn())`: when dispose
+
+
+[travis-url-master]: https://travis-ci.org/teracy-offcial/pixelate
+[travis-image-master]: https://travis-ci.org/teracy-official/pixelate.svg?branch=master
+[travis-url-develop]: https://travis-ci.org/teracy-offcial/pixelate
+[travis-image-develop]: https://travis-ci.org/teracy-official/pixelate.svg?branch=develop
