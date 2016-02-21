@@ -21,9 +21,8 @@ after_success:
 - echo $DEPLOY_PASSWORD
 - echo $DEPLOY_HOST
 - echo $DEPLOY_PATH
-- travis_wait if [ "$DEPLOY_PROTOCOL" == "sftp://" ]; then export SSHPASS=$DEPLOY_PASSWORD; sshpass
-  -e scp -o Cipher=arcfour StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $DEPLOY_DIR "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH"; fi
-- travis_wait if [ "$DEPLOY_PROTOCOL" == "ftp://" ]; then ncftpput -R -u "$DEPLOY_USER" -p "$DEPLOY_PASSWORD"
+- if [ "$DEPLOY_PROTOCOL" == "sftp://" ]; then export SSHPASS=$DEPLOY_PASSWORD; travis_wait sshpass -e scp -o Cipher=arcfour StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $DEPLOY_DIR "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH"; fi
+- if [ "$DEPLOY_PROTOCOL" == "ftp://" ]; then travis_wait  ncftpput -R -u "$DEPLOY_USER" -p "$DEPLOY_PASSWORD"
   $DEPLOY_HOST $DEPLOY_PATH $DEPLOY_DIR; fi
 env:
   global:
