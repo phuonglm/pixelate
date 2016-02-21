@@ -8,6 +8,28 @@ install:
 - npm install
 - bower install
 before_script: grunt build
-notifications:
-  slack:
-    secure: KVnwfl/t4CDpXGoOxxG6I+KaODzRXnXAkvb/jvHKbBkgSpf5yMQSRD577Qfv2EXoVJwrkrGvuM0WotsXgbjcTfP+Xw31MqcfYYZh5jtwhuwx7vuMSRHxIheBFXR6mpv9jvsHalqz3sfuKFOxBFKMlldRQp5fr6fUMjp4iCA/0x8=
+after_success:
+- DEPLOY_DIR=*
+- DEPLOY_PROTOCOL="$(echo $DEST_URI | grep :// | sed -e's,^\(.*://\).*,\1,g')"
+- url="$(echo ${DEST_URI/$DEPLOY_PROTOCOL/})"
+- ! 'DEPLOY_USER="$(echo $url | grep "@" | cut -d: -f1)"'
+- DEPLOY_PASSWORD="$(echo ${url/$DEPLOY_USER:/} | cut -d@ -f1)"
+- DEPLOY_HOST="$(echo ${url/$DEPLOY_USER:$DEPLOY_PASSWORD@/} | cut -d/ -f1)"
+- DEPLOY_PATH="/$(echo $url | grep / | cut -d/ -f2-)"
+- echo $DEPLOY_PROTOCOL
+- echo $DEPLOY_USER
+- echo $DEPLOY_PASSWORD
+- echo $DEPLOY_HOST
+- echo $DEPLOY_PATH
+- if [ "$DEPLOY_PROTOCOL" == "sftp://" ]; then export SSHPASS=$DEPLOY_PASSWORD; sshpass
+  -e scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r $DEPLOY_DIR "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH"; fi
+- if [ "$DEPLOY_PROTOCOL" == "ftp://" ]; then ncftpput -R -u "$DEPLOY_USER" -p "$DEPLOY_PASSWORD"
+  $DEPLOY_HOST $DEPLOY_PATH $DEPLOY_DIR; fi
+env:
+  global:
+    secure: EA8jWzQ6Hu8zZtGevstZfBUvZFxZZ0swDouq2RykprtCyp2euzenoN9yXCP/tBuXPQ58e9EeZ60KvJEqXGgdnwN6ek35qvkGlXMEcgbvGOFscsTWK8QoWiks09eAENHnLHPE47Dkfuefb412MGLOO6GExpV7zIR75+obq05Sjeo=
+addons:
+  apt:
+    packages:
+    - sshpass
+    - ncftp
